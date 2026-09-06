@@ -6,7 +6,7 @@
 	//$vertexalpha" "1"
 
 	"$surfaceprop" "weapon"
-	"$basetexture" "models\weapons\titan_minigun\titan_minigun_col"
+	"$basetexture" "models\weapons\titan_minigun\titan_minigun_col_2"
 	"$bumpmap" "models\weapons\titan_minigun\titan_minigun_nml"
 	"$envmap" "env_cubemap"
 	"$reflectiontint" "models\weapons\titan_minigun\titan_minigun_spc"
