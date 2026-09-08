@@ -6017,3 +6017,118 @@ function SetPlayerSetFile( player, classSettings )
 		printt( "WARNING - Could not determine correct model name for player " + player + " using playerSetFile '" + classSettings + "' and field '" + modelFieldName + "'" )
 	}
 }
+
+// Based on: https://github.com/p2r3/ppmod/blob/f4dc3f80a0ee0bc60bbd672a7667d72702bdbb44/ppmod.nut#L2080
+// DO NOT use CreateBrush to create collision blockers, theyre not predicted properly
+function CreateBrush( origin, angles, size, type = "func_brush", name = "" )
+{
+	if ( size.x < 0.0 || size.y < 0.0 || size.z < 0.0 )
+		throw "brush: Size must be positive on all axis"
+
+	local brush = CreateEntity( type )
+
+	if ( name != "" )
+		brush.SetName( name )
+	else
+		brush.SetName( UniqueString( type ) )
+
+	if ( origin )
+	{
+		// hack: Setting origin twice. SetOrigin needs to happen before DispatchSpawn, otherwise the prop may not touch triggers
+		brush.SetOrigin( origin )
+		if ( angles )
+			brush.SetAngles( angles )
+	}
+	DispatchSpawn( brush )
+	if ( origin )
+	{
+		// hack: Setting origin twice. SetOrigin needs to happen after DispatchSpawn, otherwise origin is snapped to nearest whole unit
+		brush.SetOrigin( origin )
+		if ( angles )
+			brush.SetAngles( angles )
+	}
+
+	// Make the brush solid and rotatable
+	brush.SetValueForKey( "Solid", 3 )
+	// Scale the bounding box of the brush, centered on its origin
+	brush.SetSize( Vector() - size, size )
+
+	brush.s.size <- size
+
+	if ( !( "scriptCreatedBrushes" in level ) )
+		level.scriptCreatedBrushes <- []
+
+	level.scriptCreatedBrushes.append( brush )
+	brush.ConnectOutput( "OnDestroy", RemoveScriptBrush )
+
+	//DebugDrawBox( origin, Vector() - size, size, 255, 0, 0, 1, 6 )
+
+	return brush
+}
+
+function CreateTrigger( origin, angles, size, type = "trigger_multiple", name = "" )
+{
+	local trigger = CreateBrush( origin, angles, size, type )
+
+	// Make the trigger non-solid
+	trigger.SetValueForKey( "CollisionGroup", 21 )
+	// Turn on activation by clients by default
+	trigger.SetValueForKey( "SpawnFlags", 1 )
+
+	EntFireByHandle( trigger, "Enable", "", 0.0, null, null )
+
+	// If this is a trigger_once, make it disappear upon activation
+	if ( type == "trigger_once" )
+		trigger.AddOutput( "OnStartTouch", "!self", "Kill" )
+
+	return trigger
+}
+
+function CreateTriggerOutOfBounds( origin, angles, size, name = "" )
+{
+	local trigger = CreateTrigger( origin, angles, size, "trigger_out_of_bounds", name )
+	trigger.ConnectOutput( "OnStartTouch", EntityOutOfBounds )
+	trigger.ConnectOutput( "OnEndTouch", EntityBackInBounds )
+
+	return trigger
+}
+
+// damageSource can be either: "fall" "splat" "burn" or "submerged" <- this doesnt seem to work properly
+function CreateTriggerHurt( origin, angles, size, damage = 0, damageSource = "", name = "" )
+{
+	local trigger = CreateTrigger( origin, angles, size, "trigger_hurt", name )
+	trigger.SetValueForKey( "damage", damage )
+	trigger.SetValueForKey( "damageSourceName", damageSource )
+
+	InitDamageTriggers( trigger )
+
+	return trigger
+}
+
+function CreateTriggerCapturePoint( origin, angles, size, name = "" )
+{
+	local trigger = CreateTrigger( origin, angles, size, "trigger_capture_point", name )
+	return trigger
+}
+
+function CreateTriggerIndoors( origin, angles, size, name = "" )
+{
+	local trigger = CreateTrigger( origin, angles, size, "trigger_indoor_area", name )
+	return trigger
+}
+
+function RemoveScriptBrush( trigger, entity, caller, value )
+{
+	ArrayRemove( level.scriptCreatedBrushes, trigger )
+}
+
+function ShowScriptCreatedBrushes( duration = 5.0 )
+{
+	if ( !( "scriptCreatedBrushes" in level ) )
+		return
+
+	foreach( brush in level.scriptCreatedBrushes )
+	{
+		DebugDrawBox( brush.GetOrigin(), Vector() - brush.s.size, brush.s.size, 255, 0, 0, 1, duration )
+	}
+}
