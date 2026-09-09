@@ -6062,6 +6062,8 @@ function CreateBrush( origin, angles, size, type = "func_brush", name = "" )
 	brush.ConnectOutput( "OnDestroy", RemoveScriptBrush )
 
 	//DebugDrawBox( origin, Vector() - size, size, 255, 0, 0, 1, 6 )
+	//brush.ConnectOutput( "OnStartTouch", ScriptBrushEnter )
+	//brush.ConnectOutput( "OnEndTouch", ScriptBrushExit )
 
 	return brush
 }
@@ -6108,12 +6110,22 @@ function CreateTriggerHurt( origin, angles, size, damage = 0, damageSource = "",
 function CreateTriggerCapturePoint( origin, angles, size, name = "" )
 {
 	local trigger = CreateTrigger( origin, angles, size, "trigger_capture_point", name )
+	trigger.SetValueForKey( "SpawnFlags", 3 )
+
 	return trigger
 }
 
 function CreateTriggerIndoors( origin, angles, size, name = "" )
 {
 	local trigger = CreateTrigger( origin, angles, size, "trigger_indoor_area", name )
+	trigger.SetValueForKey( "SpawnFlags", 3 )
+
+	return trigger
+}
+
+function CreateTriggerWeaponless( origin, angles, size, name = "" )
+{
+	local trigger = CreateTrigger( origin, angles, size, "trigger_weaponless", name )
 	return trigger
 }
 
@@ -6122,13 +6134,48 @@ function RemoveScriptBrush( trigger, entity, caller, value )
 	ArrayRemove( level.scriptCreatedBrushes, trigger )
 }
 
-function ShowScriptCreatedBrushes( duration = 5.0 )
+// Not really accurate if the brush is rotated at all
+function ShowScriptCreatedBrushes( duration = 5.0, opacity = 0 )
 {
 	if ( !( "scriptCreatedBrushes" in level ) )
 		return
 
+	local color
 	foreach( brush in level.scriptCreatedBrushes )
 	{
-		DebugDrawBox( brush.GetOrigin(), Vector() - brush.s.size, brush.s.size, 255, 0, 0, 1, duration )
+		switch ( brush.GetClassname() )
+		{
+			case "trigger_out_of_bounds":
+				color = [ 255, 255, 0 ]
+				break
+
+			case "trigger_hurt":
+				color = [ 255, 0, 0 ]
+				break
+
+			case "trigger_capture_point":
+				color = [ 180, 0, 255 ]
+				break
+
+			case "trigger_indoor_area":
+				color = [ 128, 128, 128 ]
+				break
+
+			default:
+				color = [ 0, 255, 0 ]
+				break
+		}
+
+		DebugDrawBox( brush.GetOrigin(), Vector() - brush.s.size, brush.s.size, color[0], color[1], color[2], opacity, duration )
 	}
+}
+
+function ScriptBrushEnter( trigger, entity, caller, value )
+{
+	printt( "entity", entity, "entered script brush", trigger.GetName() )
+}
+
+function ScriptBrushExit( trigger, entity, caller, value )
+{
+	printt( "entity", entity, "exited script brush", trigger.GetName() )
 }

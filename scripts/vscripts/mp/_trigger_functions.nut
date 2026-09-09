@@ -27,6 +27,7 @@ function main()
 	AddSpawnCallback( "trigger_player_flashlight_off"  , AddToFlagTriggers )
 	AddSpawnCallback( "trigger_door"				   , AddToFlagTriggers )
 
+	AddSpawnCallback( "trigger_weaponless", 				TriggerWeaponless )	
 
 	if ( !IsMultiplayer() )
 	{
@@ -34,7 +35,7 @@ function main()
 		AddSpawnCallback( "trigger_player_flashlight_zone", 	TriggerPlayerFlashlight )
 		AddSpawnCallback( "trigger_player_flashlight_on", 		TriggerPlayerFlashlight )
 		AddSpawnCallback( "trigger_player_flashlight_off", 		TriggerPlayerFlashlight )
-		AddSpawnCallback( "trigger_weaponless", 				TriggerWeaponless )		
+		//AddSpawnCallback( "trigger_weaponless", 				TriggerWeaponless )		
 	}
 }
 
@@ -167,7 +168,11 @@ function TriggerDoorThink( trigger, doorName )
 function TriggerWeaponless( trigger )
 {
 	TriggerInit( trigger )
-	thread TriggerWeaponlessThink( trigger )
+
+	trigger.ConnectOutput( "OnStartTouch", TryDisablePlayerWeapon )
+	trigger.ConnectOutput( "OnEndTouch", TryEnablePlayerWeapon )
+
+	//thread TriggerWeaponlessThink( trigger )
 }
 
 function TriggerWeaponlessThink( trigger )
@@ -309,3 +314,29 @@ function InitFlagsFromTrigger( trigger )
 	}
 }
 
+function TryDisablePlayerWeapon( trigger, entity, caller, value )
+{
+	if ( !entity.IsPlayer() )
+		return
+
+	if ( !IsAlive( entity ) )
+		return
+
+	if ( !( "ignoreDisableWeapon" in entity.s ) )
+		entity.HolsterWeapon()	
+}
+
+function TryEnablePlayerWeapon( trigger, entity, caller, value )
+{
+	if ( !entity.IsPlayer() )
+		return
+
+	if ( !IsAlive( entity ) )
+		return
+
+	if ( entity.ContextAction_IsMeleeExecution() )
+		return
+
+	if ( !( "ignoreDisableWeapon" in entity.s ) )
+		entity.DeployWeapon()
+}
