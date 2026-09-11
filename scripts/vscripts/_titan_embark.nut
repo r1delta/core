@@ -74,6 +74,29 @@ function main()
 		AddClientCommandCallback( "TitanStand", ClientCommand_TitanStand ) //
 		AddClientCommandCallback( "TitanNextMode", ClientCommand_TitanNextMode ) //
 	}
+	
+	local loop_max = MasterModdedTitans.len()
+	for( local E = 0; E < loop_max; E++ )
+	{
+		if( loop_max > 0 )
+		{
+			local t_a = MasterModdedTitans[ E ]
+			switch( t_a.titan_type )
+			{
+				case "special_atlas":
+					AddEmbarkAnims( t_a.setfile, "atlas", t_a.embark_override )
+					AddEmbarkAudio( t_a.setfile, "atlas" )
+				
+				case "special_stryder":
+					AddEmbarkAnims( t_a.setfile, "stryder", t_a.embark_override )
+					AddEmbarkAudio( t_a.setfile, "stryder" )
+				
+				case "special_ogre":
+					AddEmbarkAnims( t_a.setfile, "ogre", t_a.embark_override )
+					AddEmbarkAudio( t_a.setfile, "ogre" )
+			}
+		}
+	}
 }
 
 
@@ -461,7 +484,7 @@ function RefreshTitanEmbarkActions()
 
 function DebugEmbarkTimes()
 {
-	local settings = [ "atlas", "ogre", "stryder" ]
+	local settings = [ "atlas", "ogre", "stryder", "special_atlas", "special_ogre", "special_stryder" ]
 
 	local models = [ "models/Humans/imc_pilot/male_cq/imc_pilot_male_cq.mdl", "models/humans/pilot/female_cq/pilot_female_cq.mdl" ]
 	local times = {}
@@ -1343,7 +1366,7 @@ function PlayerDisembarksTitan( player )
 	TitanBecomesPilot( player, titan )
 
 	local titanType = GetSoulTitanType( titan.GetTitanSoul() )
-	if ( titanType == "ogre" )
+	if ( titanType == "ogre" || titanType == "special_ogre )
 	{
 		ShowMainTitanWeapons( titan ) //JFS: Because we hide the Titan's weapons upon kneeling for ogre
 	}
@@ -1368,6 +1391,20 @@ function PlayerDisembarksTitan( player )
 
 	local player3pAnim, player1pAnim
 	local player3pAudio, player1pAudio
+		
+	if ( titanType == "special_ogre" )
+	{
+		titanType = "ogre"
+	}
+	if ( titanType == "special_atlas" )
+	{
+		titanType = "atlas"
+	}
+	if ( titanType == "special_stryder" )
+	{
+		titanType = "stryder"
+	}
+	
 	if ( standing )
 	{
 		player3pAnim = "pt_dismount_" + titanType + "_stand"

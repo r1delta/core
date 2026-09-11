@@ -328,6 +328,12 @@ function UpdateSmartGlassPlayerClass( player )
 		local titanType = GetSoulTitanType( soul )
 		switch ( titanType )
 		{
+			case "special_ogre":
+				smartGlassClass = "ogre"
+			case "special_atlas":
+				smartGlassClass = "atlas"
+			case "special_stryder":
+				smartGlassClass = "stryder"
 			case "stryder":
 			case "atlas":
 			case "ogre":

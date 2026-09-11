@@ -47,24 +47,13 @@ function IsRodeoDamage( soul, damageInfo )
 		return IsCoopRodeoDamage( soul, damageInfo )
 
 	local attacker = damageInfo.GetAttacker()
-	
-	// Check for player rodeos
-	if ( attacker.IsPlayer() )
-	{
-		if ( attacker.GetTitanSoulBeingRodeoed() != soul )
-			return false
-		return true
-	}
-	
-	// Check for NPC/spectre rodeos in all modes
-	local rider = soul.GetRiderEnt()
-	if ( !rider )
+	if ( !attacker.IsPlayer() )
 		return false
-	
-	if ( rider == attacker )
-		return true
 
-	return false
+	if ( attacker.GetTitanSoulBeingRodeoed() != soul )
+		return false
+
+	return true
 }
 
 function IsCoopRodeoDamage( soul, damageInfo )
@@ -82,26 +71,31 @@ function IsCoopRodeoDamage( soul, damageInfo )
 function HitRodeoBrain( soul, damageInfo )
 {
 	local attacker = damageInfo.GetAttacker()
-	
-	// Original coop handling
 	if ( GAMETYPE == COOPERATIVE && !( attacker.IsPlayer() ) )
 		return IsCoopRodeoDamage( soul, damageInfo )
 
-	// NEW: Handle spectre rodeos in non-coop modes
-	local rider = soul.GetRiderEnt()
-	if ( rider && rider == attacker && attacker.IsNPC() )
-		return true
-
-	// Original player rodeo hitbox check
 	return damageInfo.GetHitBox() == soul.rodeoHitBoxNumber
 }
 
-function IsRodeoBrainDamage( soul, damageInfo )
+function IsRodeoBrainDamage( soul, damageInfo )//Not a good solution but works for now, ttf2 titans are..difficult.
 {
 	if ( !IsRodeoDamage( soul, damageInfo ) )
 		return false
+	
+	local modded_titan = false
+	switch( GetSoulTitanType( soul ) )
+	{
+		case "special_ogre":
+		case "special_atlas":
+		case "special_stryder":
+			modded_titan = true
+			break
+		
+		default:
+			break
+	}
 
-	if ( !HitRodeoBrain( soul, damageInfo ) )
+	if ( !HitRodeoBrain( soul, damageInfo ) && modded_titan == false )
 		return false
 
 	return true
@@ -133,10 +127,7 @@ function CheckRodeoRiderHitsTitan( soul, damageInfo )
 			if ( !IsValid( ent ) )
 				return
 
-			// MODIFIED: Check for spectres separately
-			local isSpectreRodeo = ( damageInfo.GetAttacker().IsNPC() && soul.GetRiderEnt() == damageInfo.GetAttacker() )
-			
-			if ( !isSpectreRodeo && !( ent instanceof CProjectile || ent instanceof CWeaponX ) )
+			if ( !( ent instanceof CProjectile || ent instanceof CWeaponX ) )
 				return
 
 			local rodeoDamageValue = ent.GetRodeoDamage()
@@ -934,6 +925,7 @@ function DropTitanHealthCore( entity )
 /*
 	switch ( titanType )
 	{
+		case "scorch":
 		case "ogre":
 			healthCore.s.healthAmount = 3000
 			break

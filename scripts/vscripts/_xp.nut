@@ -637,6 +637,10 @@ function SetNewStatus( ref, player )
 
 			case itemType.TITAN_SETFILE:
 				// Chassis are already unlocked when you gen up, so don't mark them as new
+				if ( ref != "titan_stryder" || ref != "titan_ogre" )//HACKY
+				{
+					ref = "titan_ogre"//just dont want to deal with errors
+				}
 				if ( player.GetGen() > 0 && ( ref == "titan_stryder" || ref == "titan_ogre" ) )
 					break
 				player.SetPersistentVar( "newChassis[" + ref + "]", true )

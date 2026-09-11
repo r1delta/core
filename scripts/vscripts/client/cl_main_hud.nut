@@ -113,7 +113,7 @@ function main()
 	AddCinematicEventFlagChangedCallback( CE_FLAG_INTRO, CinematicEventFlagChanged )
 	AddCinematicEventFlagChangedCallback( CE_FLAG_CLASSIC_MP_SPAWNING, CinematicEventFlagChanged )
 	AddCinematicEventFlagChangedCallback( CE_FLAG_EOG_STAT_DISPLAY, CinematicEventFlagChanged )
-	AddCinematicEventFlagChangedCallback( CE_FLAG_PERMANENT_HIDEHUD, CinematicEventFlagChanged )
+	//AddCinematicEventFlagChangedCallback( CE_FLAG_PERMANENT_HIDEHUD, CinematicEventFlagChanged )
 
 	RegisterConCommandTriggeredCallback( "weaponSelectOrdnance", SwitchedToOrdnance )
 
@@ -221,6 +221,8 @@ function PilotMainHud( cockpit, player )
 	cockpit.s.coreFXHandle <- null
 
 	local scoreGroup = HudElementGroup( "scoreboardProgress" )
+	if ( GameRules.GetGameMode() == "cp" )
+		OnHardpointCockpitCreated( cockpit, panel, scoreGroup )
 
 	MainHud_InitScoreBars( mainVGUI, player, scoreGroup )
 
@@ -398,6 +400,8 @@ function TitanMainHud( cockpit, player )
 	MainHud_InitTargetHealthBars( cockpit, player )
 
 	local scoreGroup = HudElementGroup( "scoreboardProgress" )
+	if ( GameRules.GetGameMode() == "cp" )
+		OnHardpointCockpitCreated( cockpit, panel, scoreGroup )
 
 	MainHud_InitScoreBars( mainVGUI, player, scoreGroup )
 
@@ -781,7 +785,7 @@ function UpdateDashBarColor( player )
 	local alpha = dashBar.GetBaseAlpha()
 	local alpha_FG = dashBarFG.GetBaseAlpha()
 
-	if ( PlayerHasPassive( player, PAS_FUSION_CORE ) && GetConVarBool( "delta_hud_misc_changes" ) )
+	if ( PlayerHasPassive( player, PAS_FUSION_CORE ) )
 	{
 		col = [ SHIELD_BOOST_R, SHIELD_BOOST_G, SHIELD_BOOST_B ]
 		col_FG = [ SHIELD_BOOST_R, SHIELD_BOOST_G, SHIELD_BOOST_B ]
@@ -790,6 +794,7 @@ function UpdateDashBarColor( player )
 	dashBar.ColorOverTime( col[0], col[1], col[2], alpha, 0.5, INTERPOLATOR_DEACCEL )
 	dashBarFG.ColorOverTime( col_FG[0], col_FG[1], col_FG[2], alpha_FG, 0.5, INTERPOLATOR_DEACCEL )
 }
+Globalize( UpdateDashBarColor )
 
 // TMP.. there are more efficient ways to do this like HudAnimations.txt... but they take too long to setup right now
 function TitanShieldBarPulseThink( cockpit, player )
@@ -980,7 +985,7 @@ function DidUpdateRodeoRideNameAndIcon( cockpit, player )
 	cockpit.s.mainVGUI.s.rodeoAlertIcon.Show()
 	cockpit.s.mainVGUI.s.rodeoAlertLabel.Show()
 
-	if ( ShouldPreventFriendlyFire( titan, player ) )
+	if ( titan.GetTeam() == player.GetTeam() )
 	{
 		cockpit.s.mainVGUI.s.rodeoAlertIcon.SetImage( "HUD/riding_icon_friendly" )
 		cockpit.s.mainVGUI.s.rodeoAlertLabel.SetText( "#HUD_RODEO_RIDER_FRIENDLY", name )
@@ -3224,34 +3229,6 @@ function ScoreBarsTitanCountThink( vgui, player, friendlyTitanCountElem, friendl
 			friendlyTeam = player.GetTeam()
 			enemyTeam = friendlyTeam == TEAM_IMC ? TEAM_MILITIA : TEAM_IMC
 		}
-		if ( IsFFABased() )
-		{
-			local friendlyTitans = []
-			local enemyTitans = []
-			foreach ( titan in GetPlayerTitansOnTeam( friendlyTeam ) )
-			{
-				if ( ShouldPreventFriendlyFire( titan, player ) )
-					friendlyTitans.append( titan )
-				else
-					enemyTitans.append( titan )
-			}
-
-			local readyPlayers = GetPlayerTitansReadyOnTeam( friendlyTeam )
-			local friendlyTitanCount = friendlyTitans.len()
-			local friendlyBurnTitanCount = GetBurnTitanCount( friendlyTitans )
-			local friendlyTitanReadyCount = ArrayContains( readyPlayers, player ) ? 1 : 0
-			local enemyTitanCount = enemyTitans.len()
-			local enemyBurnTitanCount = GetBurnTitanCount( enemyTitans )
-			local opponentSlots = max( 1, GetPlayerArray().len() - 1 ).tofloat()
-
-			friendlyTitanCountElem.SetBarProgress( friendlyTitanCount.tofloat() )
-			friendlyTitanCountBurnElem.SetBarProgress( friendlyBurnTitanCount.tofloat() )
-			friendlyTitanReadyCountElem.SetBarProgress( ( friendlyTitanCount + friendlyTitanReadyCount ).tofloat() )
-			enemyTitanCountElem.SetBarProgress( enemyTitanCount.tofloat() / opponentSlots )
-			enemyTitanCountBurnElem.SetBarProgress( enemyBurnTitanCount.tofloat() / opponentSlots )
-			continue
-		}
-
 
 		local friendlyTitans = GetPlayerTitansOnTeam( friendlyTeam )
 		local friendlyTitanCount = friendlyTitans.len()
@@ -3361,8 +3338,8 @@ function ShouldMainHudBeVisible( player )
 	if ( ceFlags & CE_FLAG_EOG_STAT_DISPLAY )
 		return false
 
-	if ( ceFlags & CE_FLAG_PERMANENT_HIDEHUD )
-		return false
+	//if ( ceFlags & CE_FLAG_PERMANENT_HIDEHUD )
+		//return false
 
 	local gameState = GetGameState()
 
@@ -3778,16 +3755,11 @@ else
 		
 		if ( lvl != player.cv.lastLevel )
 		{
-			if ( "xpBar" in cockpit.s )
-				cockpit.s.xpBar.pastFill.Hide()
+			cockpit.s.xpBar.pastFill.Hide()
 			if ( lvl == MAX_LEVEL || IsNonDeltaPrivateMatch() ) //!PlayerProgressionAllowed( player )
-			{
-				if ( "xpBarGroup" in cockpit.s )
-					cockpit.s.xpBarGroup.Hide()
-			}
+				cockpit.s.xpBarGroup.Hide()
 
-			if ( "xpBar" in cockpit.s && IsValid( cockpit.s.xpBar.fill ) )
-				cockpit.s.xpBar.fill.SetBarProgressRemap( GetLevelProgressStart( player ), GetLevelProgressEnd( player ), 0, 1 )
+			cockpit.s.xpBar.fill.SetBarProgressRemap( GetLevelProgressStart( player ), GetLevelProgressEnd( player ), 0, 1 )
 
 			if ( GetConVarBool( "delta_hud_show_levelup" ) )
 			{
@@ -3808,8 +3780,7 @@ else
 			player.cv.lastLevel = lvl
 		}
 
-		if ( "xpBar" in cockpit.s && IsValid( cockpit.s.xpBar.fill ) )
-			cockpit.s.xpBar.fill.SetBarProgress( GetXP( player ) )
+		cockpit.s.xpBar.fill.SetBarProgress( GetXP( player ) )
 	}
 }
 

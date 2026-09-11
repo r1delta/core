@@ -460,23 +460,33 @@ function ObserverFunc( player )
 //			Remote.CallFunction_NonReplay( guy, "ServerCallback_HideSpectatorSelectButtons" )
 //		}
 //
-//		/*
+//		
 //		player.SetObserverModeStaticPosition( deathCam.GetOrigin() )
 //		player.SetObserverModeStaticAngles( deathCam.GetAngles() )
 //
 //		player.StartObserverMode( OBS_MODE_STATIC_LOCKED )
 //		player.SetObserverTarget( null )
-//		*/
+//		
 //	}
 //	else
 
-	{
-		player.SetObserverModeStaticPosition( level.ExtractLocations[ level.SelectedExtractLocationIndex ].spectatorPos )
-		player.SetObserverModeStaticAngles( level.ExtractLocations[ level.SelectedExtractLocationIndex ].spectatorAng )
-
-		player.StartObserverMode( OBS_MODE_CHASE )
-		player.SetObserverTarget( null )
-	}
+	
+	//player.SetObserverModeStaticPosition( level.ExtractLocations[ level.SelectedExtractLocationIndex ].spectatorPos )
+	//player.SetObserverModeStaticAngles( level.ExtractLocations[ level.SelectedExtractLocationIndex ].spectatorAng )
+	
+	//player.StartObserverMode( OBS_MODE_CHASE )
+	//player.SetObserverTarget( null )
+	return
+	
 }
 
+function EvacObserverFunc( player )
+{
+	player.SetObserverModeStaticPosition( level.ExtractLocations[ level.SelectedExtractLocationIndex ].spectatorPos )
+	player.SetObserverModeStaticAngles( level.ExtractLocations[ level.SelectedExtractLocationIndex ].spectatorAng )
+
+	player.StartObserverMode( OBS_MODE_CHASE )
+	player.SetObserverTarget( null )
+	
+}
 main()

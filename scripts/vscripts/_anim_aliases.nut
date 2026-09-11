@@ -15,6 +15,17 @@ function main()
 
 	level.audioAliases <- {}
 
+	
+	local loop_max = MasterModdedTitans.len()
+	for( local E = 0; E < loop_max; E++ )
+	{
+		if( loop_max > 0 )
+		{
+			local t_a = MasterModdedTitans[ E ]
+			level.animMappings[ t_a.setfile ] <- t_a.embark_override
+		}
+	}
+
 }
 
 function AddAnimAlias( titanType, alias, animation )
@@ -32,8 +43,21 @@ function AddAnimAlias( titanType, alias, animation )
 	level.animAliases[ alias ][ titanType ] <- animation
 }
 
-function GetAnimFromAlias( titanType, alias )
+function GetAnimFromAlias( titanType, alias )//necessary...must improvise
 {
+	if ( titanType == "special_atlas" )
+	{
+		titanType = "atlas"
+	}
+	if ( titanType == "special_ogre" )
+	{
+		titanType = "ogre"
+	}
+	if ( titanType == "special_stryder" )
+	{
+		titanType = "stryder"
+	}
+
 	titanType = titanType.tolower()
 	alias = alias.tolower()
 
@@ -72,6 +96,19 @@ function AddAudioAlias( titanType, alias, audio )
 
 function GetAudioFromAlias( titanType, alias )
 {
+	if ( titanType == "special_atlas" )
+	{
+		titanType = "atlas"
+	}
+	if ( titanType == "special_ogre" )
+	{
+		titanType = "ogre"
+	}
+	if ( titanType == "special_stryder" )
+	{
+		titanType = "stryder"
+	}
+	
 	titanType = titanType.tolower()
 	alias = alias.tolower()
 

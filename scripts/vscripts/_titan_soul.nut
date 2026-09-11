@@ -54,6 +54,16 @@ function main()
 	AddTitanMapping( "titan_atlas_training", "atlas" )
 	AddTitanMapping( "titan_ctt", "ogre" )
 	AddTitanMapping("titan_destroyer_tier0", "destroyer")
+	
+	local loop_max = MasterModdedTitans.len()
+	for( local E = 0; E < loop_max; E++ )
+	{
+		if( loop_max > 0 )
+		{
+			local t_a = MasterModdedTitans[ E ]
+			AddTitanMapping( t_a.setfile, t_a.titan_type )
+		}
+	}
 }
 
 function AddTitanMapping( settings, titan )

@@ -1,0 +1,597 @@
+resource/ui/menus/titanselectTTP.menu
+{
+	TitanSelectMenuTTP
+	{
+		ControlName				Frame
+		xpos					0
+		ypos					0
+		zpos					3
+		wide					f0
+		tall					f0
+		autoResize				0
+		pinCorner				0
+		visible					1
+		enabled					1
+		PaintBackgroundType		0
+		infocus_bgcolor_override	"0 0 0 0"
+		outoffocus_bgcolor_override	"0 0 0 0"
+		modal					1
+		clip					0
+
+		Background
+		{
+			ControlName				Label
+			ypos 					-500
+			wide					f0
+			tall					1000
+			labelText 				""
+			visible					1
+			bgcolor_override		"0 0 0 240"
+		}
+
+		MenuPanel
+		{
+			ControlName				ImagePanel
+			xpos					c-390
+			ypos 					0
+			wide					782
+			tall					330
+			image 					"../ui/menu/edit_loadout/edit_weapon"
+			visible					1
+			scaleImage				1
+		}
+
+		Button0
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				0
+			xpos					4
+			ypos					-10
+			navUp					Button3
+			navDown					Button1
+			tabPosition				1
+			pin_to_sibling			MenuPanel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	0
+		}
+		Button1
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				1
+			pin_to_sibling			Button0
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button0
+			navDown					Button2
+		}
+		Button2
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				2
+			pin_to_sibling			Button1
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button1
+			navDown					Button3
+		}
+		Button3
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				3
+			pin_to_sibling			Button2
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button2
+			navDown					Button4
+		}
+		Button4
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				4
+			pin_to_sibling			Button3
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button3
+			navDown					Button5
+		}
+		Button5
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				5
+			pin_to_sibling			Button4
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button4
+			navDown					Button6
+		}
+		Button6
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				6
+			pin_to_sibling			Button5
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button5
+			navDown					Button7
+		}
+		Button7
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				7
+			pin_to_sibling			Button6
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button6
+			navDown					Button8
+		}
+		Button8
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				8
+			pin_to_sibling			Button7
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button7
+			navDown					Button9
+		}
+		Button9
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				9
+			pin_to_sibling			Button8
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button8
+			navDown					Button10
+		}
+		Button10
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				10
+			pin_to_sibling			Button9
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button9
+			navDown					Button11
+		}
+		Button11
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				11
+			pin_to_sibling			Button10
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button10
+			navDown					Button12
+		}
+		Button12
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				12
+			pin_to_sibling			Button11
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button11
+			navDown					Button13
+		}
+		Button13
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				13
+			pin_to_sibling			Button12
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button12
+			navDown					Button14
+		}
+		Button14
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				14
+			pin_to_sibling			Button13
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button13
+			navDown					Button15
+		}
+		Button15
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				15
+			pin_to_sibling			Button14
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button14
+			navDown					Button16
+		}
+		Button16
+		{
+			ControlName				BaseModHybridButton
+			InheritProperties		SubmenuButton
+			classname				TitanSelectClass
+			scriptID				16
+			pin_to_sibling			Button15
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			navUp					Button15
+			navDown					Button0
+		}
+
+		//------------------
+		// 	  CHASSIS
+		//------------------
+
+		ImgWeaponBackground
+		{
+			ControlName				ImagePanel
+			xpos 					0
+			ypos 					-9
+			zpos					6
+			wide 					320
+			tall					312
+			image 					"../ui/menu/edit_loadout/icon_chassis_back"
+			visible					1
+			scaleImage				1
+			pin_to_sibling			MenuPanel
+			pin_corner_to_sibling	4
+			pin_to_sibling_corner	4
+		}
+		ImgWeaponBackgroundHover
+		{
+			ControlName				ImagePanel
+			xpos 					0
+			ypos 					-9
+			zpos					5
+			wide 					320
+			tall					312
+			image 					"../ui/menu/edit_loadout/icon_chassis_back_hover"
+			visible					1
+			scaleImage				1
+			pin_to_sibling			MenuPanel
+			pin_corner_to_sibling	4
+			pin_to_sibling_corner	4
+		}
+		LblWeaponHeader
+		{
+			ControlName				Label
+			InheritProperties		SubitemSelectItemTitle
+			xpos					0
+			ypos 					-1
+			labelText				"#CHASSIS"
+			textAlignment			center
+			pin_to_sibling			ImgWeaponBackground
+			pin_corner_to_sibling	4
+			pin_to_sibling_corner	4
+		}
+		ImgTitanImage
+		{
+			ControlName				ImagePanel
+			classname				TitanImageClass
+			xpos 					0
+			ypos					8
+			zpos 					7
+			wide					244
+			tall					286
+			visible					1
+			scaleImage				1
+			pin_to_sibling			ImgWeaponBackground
+			pin_corner_to_sibling	8
+			pin_to_sibling_corner	8
+		}
+		LblChassisLockedText
+		{
+			ControlName				Label
+			classname				"LblChassisLockedText ItemLockedClass"
+			xpos					0
+			ypos 					0
+			zpos					10
+			wide					300
+			auto_tall_tocontents 	1
+			labelText				"UNLOCK INFO"
+			visible 				0
+			font 					LoadoutItemLocked
+			allcaps					1
+			textAlignment			center
+			centerwrap 				1
+			labelText				"UNLOCK INFO"
+			fgcolor_override		"153 61 61 255"
+			bgcolor_override		"51 20 20 240"
+
+			pin_to_sibling			ImgTitanImage
+			pin_corner_to_sibling	8
+			pin_to_sibling_corner	8
+		}
+
+		//------------------
+		// 	  STAT BARS
+		//------------------
+
+		HealthLabel
+		{
+			ControlName				Label
+			InheritProperties		LoadoutItemStatLabel
+			xpos 					-204
+			ypos 					-186
+			labelText				"#TITAN_HEALTH"
+			pin_to_sibling			MenuPanel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	1
+		}
+		HealthBar
+		{
+			ControlName				CNestedPanel
+			classname 				HealthBarClass
+			xpos					0
+			ypos					2
+			wide					176
+			tall					12
+			visible					1
+			controlSettingsFile		"resource/UI/menus/loadout_weapon_stat_bar.res"
+
+			pin_to_sibling			HealthLabel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+		}
+		SpeedLabel
+		{
+			ControlName				Label
+			InheritProperties		LoadoutItemStatLabel
+			pin_to_sibling			HealthLabel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			ypos 					20
+			labelText				"#TITAN_SPEED"
+		}
+		SpeedBar
+		{
+			ControlName				CNestedPanel
+			classname 				SpeedBarClass
+			xpos					0
+			ypos					2
+			wide					176
+			tall					12
+			visible					1
+			controlSettingsFile		"resource/UI/menus/loadout_weapon_stat_bar.res"
+
+			pin_to_sibling			SpeedLabel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+		}
+		AccelLabel
+		{
+			ControlName				Label
+			InheritProperties		LoadoutItemStatLabel
+			pin_to_sibling			SpeedLabel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			ypos 					20
+			labelText				"#TITAN_ACCELERATION"
+		}
+		AccelBar
+		{
+			ControlName				CNestedPanel
+			classname 				AccelBarClass
+			xpos					0
+			ypos					2
+			wide					176
+			tall					12
+			visible					1
+			controlSettingsFile		"resource/UI/menus/loadout_weapon_stat_bar.res"
+
+			pin_to_sibling			AccelLabel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+		}
+		DashCountLabel
+		{
+			ControlName				Label
+			InheritProperties		LoadoutItemStatLabel
+			pin_to_sibling			AccelLabel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			ypos 					20
+			labelText				"#TITAN_DASH_COUNT"
+		}
+		DashCount
+		{
+			ControlName				Label
+			classname 				DashCountClass
+			pin_to_sibling			DashCountLabel
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+			ypos 					-4
+			auto_wide_tocontents 	1
+			auto_tall_tocontents 	1
+			labelText				"0"
+			font					LoadoutItemStatFont
+			fgcolor_override		"121 197 255 255"
+		}
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+		//------------------
+		// 	  INFO PANEL
+		//------------------
+
+		InfoPanelBackground
+		{
+			ControlName				Label
+			xpos 					-10
+			ypos 					-12
+			zpos					7
+			wide 					208
+			tall 					165
+			labelText				""
+			bgcolor_override		"0 0 0 255"
+			pin_to_sibling			MenuPanel
+			pin_corner_to_sibling	1
+			pin_to_sibling_corner	1
+		}
+		LblInfoPanelItemType
+		{
+			ControlName				Label
+			xpos					-4
+			ypos 					0
+			wide 					204
+			tall 					16
+			zpos					8
+			visible					1
+			font					EditLoadoutInfoItemType
+			allcaps					1
+			fgcolor_override		"204 234 255 255"
+			labelText				"ITEM TYPE"
+			textAlignment			west
+
+			pin_to_sibling			InfoPanelBackground
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	0
+		}
+		LblInfoPanelItemName
+		{
+			ControlName				Label
+			classname 				"TitanNameClass"
+			xpos					0
+			ypos 					-4
+			wide 					204
+			tall 					16
+			zpos					8
+			visible					1
+			font					EditLoadoutInfoItemName
+			allcaps					1
+			fgcolor_override		"204 234 255 255"
+			labelText				"ITEM NAME"
+			textAlignment			west
+
+			pin_to_sibling			LblInfoPanelItemType
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+		}
+		LblInfoPanelItemDesc
+		{
+			ControlName				Label
+			classname 				TitanDescClass
+			xpos					0
+			ypos 					0
+			wide 					200
+			tall 					56
+			zpos					8
+			visible					1
+			font					EditLoadoutInfoItemDesc
+			allcaps					0
+			wrap 					1
+			fgcolor_override		"150 180 190 255"
+			labelText				"ITEM DESCRIPTION"
+			textAlignment			north-west
+
+			pin_to_sibling			LblInfoPanelItemName
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+		}
+
+		CoreImage
+		{
+			ControlName				ImagePanel
+			classname				CoreImageClass
+			xpos 					-4
+			ypos 					-50
+			zpos 					9
+			wide					32
+			tall					32
+			scaleImage 				1
+
+			pin_to_sibling			InfoPanelBackground
+			pin_corner_to_sibling	2
+			pin_to_sibling_corner	2
+		}
+		CoreLabel
+		{
+			ControlName				Label
+			InheritProperties		LoadoutItemStatLabel
+			classname				AdditionalNameBarClass
+			xpos 					2
+			ypos 					0
+			zpos 					9
+			labelText				"ADDITIONAL NAME"
+
+			pin_to_sibling			CoreImage
+			pin_corner_to_sibling	7
+			pin_to_sibling_corner	5
+		}
+		CoreDesc
+		{
+			ControlName				Label
+			classname				TitanAdditionalDescClass
+			wide 					200
+			tall 					48
+			xpos					0
+			ypos					0
+			zpos					9
+			visible 				1
+			labelText				"CORE DESCRIPTION"
+			font					EditLoadoutInfoItemDesc
+			allcaps					0
+			wrap 					1
+			fgcolor_override		"150 180 190 255"
+			labelText				"ITEM DESCRIPTION"
+			textAlignment			north-west
+
+			pin_to_sibling			CoreImage
+			pin_corner_to_sibling	0
+			pin_to_sibling_corner	2
+		}
+
+		FooterButtons
+		{
+			ControlName				CNestedPanel
+			xpos					0
+			ypos					r176
+			zpos					20
+			wide					f0
+			tall					16
+			visible					1
+			controlSettingsFile		"resource/ui/menus/panels/footer_buttons.res"
+		}
+	}
+}

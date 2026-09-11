@@ -48,6 +48,19 @@ function main()
 	level.rodeoHitBoxNumber[ OGRE_MODEL ] <- 41
 	level.rodeoHitBoxNumber[ "models/titans/destroyer/destroyer_titan.mdl" ] <- 30
 
+	
+	local loop_max = MasterModdedTitans.len()
+	for( local E = 0; E < loop_max; E++ )
+	{
+		if( loop_max > 0 )
+		{
+			local bmt_model = MasterModdedTitans[ E ]
+			level.hatchModels[ bmt_model.titan_model ] <- bmt_model.hatch_model
+			level.rodeoHitBoxNumber[ bmt_model.titan_model ] <- bmt_model.rodeo_hitbox_number
+		}
+	}
+
+
 	Globalize( CodeCallback_PlayerInTitanCockpit )
 
 	Globalize( AddPanelToTitan )
@@ -415,13 +428,17 @@ function GetRocketPodModel( playerSettings )
 {
 	switch( playerSettings )
 	{
+		case "special_stryder":
 		case "stryder":
 			return ROCKET_POD_MODEL_STRYDER_LEFT
 
+		case "special_ogre":
 		case "ogre":
 			return ROCKET_POD_MODEL_OGRE_LEFT
-		case "destroyer":
-			return "models/Titans/ogre/ogre_titan_L_rocket_pod.mdl"
+		//case "destroyer":
+			//return ROCKET_POD_MODEL_DESTROYER_LEFT
+		
+		case "special_atlas":
 		case "atlas":
 		default:
 			return ROCKET_POD_MODEL_ATLAS_LEFT

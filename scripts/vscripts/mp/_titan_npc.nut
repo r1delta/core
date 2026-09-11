@@ -15,9 +15,6 @@ function main()
 	Globalize( SetPlayerPetTitan )
 	Globalize( AutoTitanChangedEnemy )
 	Globalize( PlayAutoTitanConversation )
-	Globalize( UpdateFFAAutoTitanRelationships )
-	Globalize( UpdateFFAOwnedNPCRelationships )
-	Globalize( FFAOwnedNPCRelationshipMonitor )
 
 	Globalize( CreateNPCTitanForPlayer )
 	Globalize( CreateNPCTitanFromSettings )
@@ -40,159 +37,6 @@ function main()
 	Minimap_PrecacheMaterial( "vgui/HUD/threathud_titan_friendlyself_guard" )
 }
 
-function ClearFFAOwnedNPCRelationshipEntities( relationships )
-{
-	foreach ( relationship in relationships )
-	{
-		if ( !IsValid_ThisFrame( relationship ) )
-			continue
-
-		relationship.Fire( "RevertToDefaultRelationship" )
-		relationship.Kill()
-	}
-
-	relationships.clear()
-}
-
-function ClearFFAOwnedNPCRelationships( npc )
-{
-	if ( !( "ffaAiRelationships" in npc.s ) )
-		return
-
-	ClearFFAOwnedNPCRelationshipEntities( npc.s.ffaAiRelationships )
-}
-
-function FFAOwnedNPCRelationshipLifetime( npc, relationships )
-{
-	npc.EndSignal( "OnDeath" )
-	npc.EndSignal( "OnDestroy" )
-
-	OnThreadEnd(
-		function() : ( relationships )
-		{
-			ClearFFAOwnedNPCRelationshipEntities( relationships )
-		}
-	)
-
-	WaitForever()
-}
-
-function AreFFAOwnedNPCRelationshipsCurrent( owners, players )
-{
-	if ( !( "ffaOwnedNpcOwners" in level ) || !( "ffaRelationshipPlayers" in level ) )
-		return false
-
-	if ( level.ffaOwnedNpcOwners.len() != owners.len() || level.ffaRelationshipPlayers.len() != players.len() )
-		return false
-
-	foreach ( npc, owner in owners )
-	{
-		if ( !( npc in level.ffaOwnedNpcOwners ) || level.ffaOwnedNpcOwners[ npc ] != owner )
-			return false
-	}
-
-	foreach ( player, present in players )
-	{
-		if ( !( player in level.ffaRelationshipPlayers ) )
-			return false
-	}
-
-	return true
-}
-
-function UpdateFFAOwnedNPCRelationships()
-{
-	if ( !IsFFABased() )
-		return
-
-	local players = {}
-	foreach ( player in GetPlayerArray() )
-	{
-		if ( IsValid( player ) && !player.IsDisconnected() )
-			players[ player ] <- true
-	}
-
-	local owners = {}
-	foreach ( npc in GetNPCArray() )
-	{
-		if ( !IsAlive( npc ) )
-			continue
-
-		local owner = GetEntityOwningPlayer( npc )
-		if ( !IsValid( owner ) || !owner.IsPlayer() || owner.IsDisconnected() )
-			continue
-
-		owners[ npc ] <- owner
-	}
-
-	if ( AreFFAOwnedNPCRelationshipsCurrent( owners, players ) )
-		return
-
-	if ( "ffaOwnedNpcOwners" in level )
-	{
-		foreach ( npc, owner in level.ffaOwnedNpcOwners )
-		{
-			if ( IsValid_ThisFrame( npc ) )
-				ClearFFAOwnedNPCRelationships( npc )
-		}
-	}
-
-	foreach ( npc, owner in owners )
-		ClearFFAOwnedNPCRelationships( npc )
-
-	if ( "ffaOwnedNpcOwners" in level )
-		level.ffaOwnedNpcOwners = owners
-	else
-		level.ffaOwnedNpcOwners <- owners
-
-	if ( "ffaRelationshipPlayers" in level )
-		level.ffaRelationshipPlayers = players
-	else
-		level.ffaRelationshipPlayers <- players
-
-	foreach ( npc, owner in owners )
-	{
-		if ( !( "ffaAiRelationships" in npc.s ) )
-		{
-			npc.s.ffaAiRelationships <- []
-			thread FFAOwnedNPCRelationshipLifetime( npc, npc.s.ffaAiRelationships )
-		}
-
-		foreach ( targetPlayer, present in players )
-		{
-			local disposition = targetPlayer == owner ? "D_LI" : "D_HT"
-			npc.s.ffaAiRelationships.append(
-				createAiRelationship( npc, targetPlayer, disposition, 0, 0 )
-			)
-		}
-
-		foreach ( targetNPC, targetOwner in owners )
-		{
-			if ( targetNPC == npc )
-				continue
-
-			local disposition = targetOwner == owner ? "D_LI" : "D_HT"
-			npc.s.ffaAiRelationships.append(
-				createAiRelationship( npc, targetNPC, disposition, 0, 0 )
-			)
-		}
-	}
-}
-
-function UpdateFFAAutoTitanRelationships()
-{
-	UpdateFFAOwnedNPCRelationships()
-}
-
-function FFAOwnedNPCRelationshipMonitor()
-{
-	while ( IsFFABased() )
-	{
-		UpdateFFAOwnedNPCRelationships()
-		wait 0.5
-	}
-}
-
 function AutoTitanDestroyedCheck( soul )
 {
 	local titan = soul.GetTitan()
@@ -213,9 +57,6 @@ function AutoTitanDestroyedCheck( soul )
 	if ( player.GetPetTitan() == titan )
 		player.SetPetTitan( null )
 
-	if ( IsFFABased() )
-		UpdateFFAAutoTitanRelationships()
-
 	if ( soul.IsEjecting() )
 		return
 
@@ -235,7 +76,6 @@ function AutoTitanDestroyedCheck( soul )
 function SetupNPC_TitanTitle( npcTitan, player )
 {
 	npcTitan.SetBossPlayer( player )
-
 
 	printt("player.GetPetTitanMode() : ", player.GetPetTitanMode())
 
@@ -518,9 +358,6 @@ function FreeAutoTitan( npcTitan )
 	npcTitan.ClearBossPlayer()
 	soul.ClearBossPlayer()
 
-	if ( IsFFABased() )
-		UpdateFFAAutoTitanRelationships()
-
 	npcTitan.SetTitle( "" )
 	npcTitan.SetShortTitle( "" )
 
@@ -582,10 +419,6 @@ function SetPlayerPetTitan( player, npcTitan )
 
 	player.SetPetTitan( npcTitan )
 	npcTitan.SetTeam( player.GetTeam() )
-
-	if ( IsFFABased() )
-		UpdateFFAAutoTitanRelationships()
-
 	//npcTitan.SetTitle( "#NPC_AUTO_TITAN" )
 }
 
@@ -675,6 +508,8 @@ function CreateSpawnNPCTitanTemplate( team, settings )
 	table.title		<- null
 	table.decal 	<- null
 
+	
+
 	SetModelSkinFromSettings( table, settings, team ) // Use the table-populating function
 	table.team      = team
 	table.settings  = settings
@@ -721,9 +556,12 @@ function CreateNPCTitanForPlayer( player, origin, angles, delayedCreation = fals
 		GiveTitanWeaponsForPlayer( player, npcTitan )
 
 	SetTitanOSForPlayer( player )
+	//table.core = SetTitanCoreForPlayer( player )
 
 	if ( !IsTrainingLevel())
 		SetDecalForTitan( player )
+		//SetTitanCoreForPlayer( player )
+
 	// start a new titan building when the current titan dies
 	AddSoulDeathFunc( UpdateSoulDeath )
 
@@ -745,10 +583,7 @@ function UpdateSoulDeath( soul )
 
 	player.OnDestroyTitan()
 
-	// Nexon clears the objective when doing this because they used the objective system
-	// To show people how to deploy their titan etc
-	// We dont use any of that, so getting rid of this
-	//ClearPlayerActiveObjective( player )
+	ClearPlayerActiveObjective( player )
 }
 
 

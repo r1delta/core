@@ -85,6 +85,7 @@ function GiveNPCTitanTacticalAbility( titan )
 
 		switch ( weaponName )
 		{
+		//case "mp_weapon_mega5":// dunno how itll affect the game but may aswell try
 		case "mp_titanweapon_vortex_shield":
 			abilityType = TTA_VORTEX
 			break
@@ -109,6 +110,7 @@ function GiveNPCTitanTacticalAbility( titan )
 
 function GiveTitanWeaponsForPlayer( player, titan, existingTitan = false )
 {
+	printl( "player given ")
 	if ( IsTrainingLevel() )
 		return
 
@@ -157,16 +159,60 @@ function GiveTitanWeaponsForPlayer( player, titan, existingTitan = false )
 	    titan.TakeOffhandWeapon( 0 )
 	    titan.TakeOffhandWeapon( 1 )
 
-        if ( "weapon" in offhands[0] )
+		//this is a lot just for these 2 passives and to not break the game again
+		local tactical = offhands[1].weapon
+		local ordnance = offhands[0].weapon
+		local tac_mods = offhands[1].mods
+		local ord_mods = offhands[0].mods
+		local tac_stuff = {}
+		local ord_stuff = {}
+		tac_stuff.weapon <- tactical
+		tac_stuff.mods <- tac_mods
+		ord_stuff.weapon <- ordnance
+		ord_stuff.mods <- ord_mods
+
+		local offhand_weaponry = [ ord_stuff, tac_stuff ]
+
+		//through the power of over-engineering: dual platform is achieved
+
+		//printl( table.passive2 )
+
+		local loop_max = MasterModdedTitans.len()
+		for( local E = 0; E < loop_max; E++ )
+		{
+			if( loop_max > 0 )
+			{
+				local t_a = MasterModdedTitans[ E ]
+
+				if( t_a.setfile == GetSoulPlayerSettings( soul ) )
+				{
+					if( t_a.weapon_overrides != null )
+					{
+						if( t_a.weapon_overrides.replaces_tactical == true )
+							offhand_weaponry[1].weapon = TryReplacementOverride( offhand_weaponry[1].weapon, offhand_weaponry[0].weapon, t_a.weapon_overrides, 1 )
+						if( t_a.weapon_overrides.replaces_ordnance == true )
+							offhand_weaponry[0].weapon = TryReplacementOverride( offhand_weaponry[1].weapon, offhand_weaponry[0].weapon, t_a.weapon_overrides, 0 )
+						if( t_a.weapon_overrides.replaces_primary == true )
+						{
+							local p_weap = titan.GetActiveWeapon().GetWeaponClassName()
+							titan.TakeWeapon( p_weap )
+							titan.GiveWeapon( TryReplacementOverride( null, null, t_a.weapon_overrides, 2 ) )
+						}
+					}
+				}
+			}
+		}
+
+        if ( "weapon" in offhand_weaponry[0] )
         {
-			if ( !TryAssignOffhand( player, titan, offhands, 0, "offhands_titans_offensive" ) )
-					titan.GiveOffhandWeapon( offhands[0].weapon, 0, [] )
+			if ( !TryAssignOffhand( player, titan, offhand_weaponry, 0, "offhands_titans_offensive" ) )
+				titan.GiveOffhandWeapon( offhand_weaponry[0].weapon, 0, [] )
 	    }
 
-        if ( "weapon" in offhands[1] )
+        if ( "weapon" in offhand_weaponry[1] )
         {
-			if ( !TryAssignOffhand( player, titan, offhands, 1, "offhands_titans_defensive" ) )
-				titan.GiveOffhandWeapon( offhands[1].weapon, 1, [] )
+			if ( !TryAssignOffhand( player, titan, offhand_weaponry, 1, "offhands_titans_defensive" ) )
+				titan.GiveOffhandWeapon( offhand_weaponry[1].weapon, 1, [] )
 	    }
 	}
 
@@ -183,7 +229,7 @@ function GiveTitanWeaponsForPlayer( player, titan, existingTitan = false )
 	// Give Titan it's signature active ability
 	titan.TakeOffhandWeapon( 2 )
 
-	titan.GiveOffhandWeapon( "mp_titanability_fusion_core", 2 )
+	titan.GiveOffhandWeapon( "mp_titanability_fusion_core", 2 )//You COULD interject here for fully custom cores
 
 	if ( IsValid( soul.rocketPod.model ) )
 		soul.rocketPod.model.Kill()
@@ -193,12 +239,15 @@ function GiveTitanWeaponsForPlayer( player, titan, existingTitan = false )
 		soul.chargeCannon.model.Kill()
 	soul.chargeCannon.model = null
 
-	if ( LoadoutContainsRocketPodWeapon( player ) )
+	local ordn = titan.GetOffhandWeapon( 0 ).GetWeaponClassName()
+	local spec = titan.GetOffhandWeapon( 1 ).GetWeaponClassName()
+
+	if ( CheckingMissilesOverwritten( ordn, spec ) )
 	{
 		CreateTitanRocketPods( soul, titan )
 	}
 
-	if ( LoadoutContainsChargeCannon( player ) )
+	if ( ordn == "mp_weapon_mega4" || spec == "mp_weapon_mega4" )
 		CreateChargeCannon( soul, titan )
 
 	if (!existingTitan)
@@ -210,7 +259,6 @@ function GiveTitanWeaponsForPlayer( player, titan, existingTitan = false )
 		foreach ( callbackInfo in level.onChangeLoadoutCallbacks )
 			callbackInfo.func.acall( [callbackInfo.scope, player, table, true] )
 }
-
 
 function GiveHotDropTitanWeaponsForPlayer( player, titan )
 {
@@ -227,21 +275,75 @@ function GiveHotDropTitanWeaponsForPlayer( player, titan )
 	Assert( !IsValid( soul.rocketPod.model ) )
 	Assert( !IsValid( soul.chargeCannon.model ) )
 
+	local offhands = table.offhandWeapons
+
+	titan.TakeOffhandWeapon( 0 )
+	titan.TakeOffhandWeapon( 1 )
+
+	local tactical = offhands[1].weapon
+	local ordnance = offhands[0].weapon
+	local tac_mods = offhands[1].mods
+	local ord_mods = offhands[0].mods
+	local tac_stuff = {}
+	local ord_stuff = {}
+	tac_stuff.weapon <- tactical
+	tac_stuff.mods <- tac_mods
+	ord_stuff.weapon <- ordnance
+	ord_stuff.mods <- ord_mods
+
+	local offhand_weaponry = [ ord_stuff, tac_stuff ]
+
+	local loop_max = MasterModdedTitans.len()
+	for( local E = 0; E < loop_max; E++ )
+	{
+		if( loop_max > 0 )
+		{
+			local t_a = MasterModdedTitans[ E ]
+
+			if( t_a.setfile == GetSoulPlayerSettings( soul ) )
+			{
+				if( t_a.weapon_overrides != null )
+				{
+					if( t_a.weapon_overrides.replaces_tactical == true )
+						offhand_weaponry[1].weapon = TryReplacementOverride( offhand_weaponry[1].weapon, offhand_weaponry[0].weapon, t_a.weapon_overrides, 1 )
+					if( t_a.weapon_overrides.replaces_ordnance == true )
+						offhand_weaponry[0].weapon = TryReplacementOverride( offhand_weaponry[1].weapon, offhand_weaponry[0].weapon, t_a.weapon_overrides, 0 )
+					if( t_a.weapon_overrides.replaces_primary == true )
+					{
+						local p_weap = titan.GetActiveWeapon().GetWeaponClassName()
+						titan.TakeWeapon( p_weap )
+						titan.GiveWeapon( TryReplacementOverride( null, null, t_a.weapon_overrides, 2 ) )
+					}
+				}
+			}
+		}
+	}
+
+	titan.GiveOffhandWeapon( offhand_weaponry[0].weapon, 0, [] )
+	titan.GiveOffhandWeapon( offhand_weaponry[1].weapon, 1, [] )
+
 	wait 0.1
 
-	if ( LoadoutContainsRocketPodWeapon( player ) )
-		CreateTitanRocketPods( soul, titan )
+	local ordn = titan.GetOffhandWeapon( 0 ).GetWeaponClassName()
+	local spec = titan.GetOffhandWeapon( 1 ).GetWeaponClassName()
 
-	if ( LoadoutContainsChargeCannon( player ) )
+	if ( CheckingMissilesOverwritten( ordn, spec ) )
+	{
+		CreateTitanRocketPods( soul, titan )
+	}
+
+	if ( ordn == "mp_weapon_mega4" || spec == "mp_weapon_mega4" )
 		CreateChargeCannon( soul, titan )
+	
 
 	ChangeWeaponSkin( titan, titan.GetTeam() )
 }
 
-
 function GiveTitanWeaponsForLoadoutData( titan, table )
 {
 	titan.GiveWeapon( table.primary, [] )
+	local offhands = table.offhandWeapons
+	local soul = titan.GetTitanSoul()
 
 	if ( table.secondary )
 		titan.GiveWeapon( table.secondary, [] )
@@ -249,15 +351,54 @@ function GiveTitanWeaponsForLoadoutData( titan, table )
     titan.TakeOffhandWeapon( 0 )
     titan.TakeOffhandWeapon( 1 )
 
-	if ( table.ordnance )
-		titan.GiveOffhandWeapon( table.ordnance, 0, [] )
+	local tactical = offhands[1].weapon
+	local ordnance = offhands[0].weapon
+	local tac_mods = offhands[1].mods
+	local ord_mods = offhands[0].mods
+	local tac_stuff = {}
+	local ord_stuff = {}
+	tac_stuff.weapon <- tactical
+	tac_stuff.mods <- tac_mods
+	ord_stuff.weapon <- ordnance
+	ord_stuff.mods <- ord_mods
 
-	if ( table.special )
-		titan.GiveOffhandWeapon( table.special, 1, [] )
+	local offhand_weaponry = [ ord_stuff, tac_stuff ]
+
+		//through the power of over-engineering: dual platform is achieved
+
+		//printl( table.passive2 )
+	local loop_max = MasterModdedTitans.len()
+	for( local E = 0; E < loop_max; E++ )
+	{
+		if( loop_max > 0 )
+		{
+			local t_a = MasterModdedTitans[ E ]
+
+			if( t_a.setfile == GetSoulPlayerSettings( soul ) )
+			{
+				if( t_a.weapon_overrides != null )
+				{
+					if( t_a.weapon_overrides.replaces_tactical == true )
+						offhand_weaponry[1].weapon = TryReplacementOverride( offhand_weaponry[1].weapon, offhand_weaponry[0].weapon, t_a.weapon_overrides, 1 )
+					if( t_a.weapon_overrides.replaces_ordnance == true )
+						offhand_weaponry[0].weapon = TryReplacementOverride( offhand_weaponry[1].weapon, offhand_weaponry[0].weapon, t_a.weapon_overrides, 0 )
+					if( t_a.weapon_overrides.replaces_primary == true )
+					{
+						local p_weap = titan.GetActiveWeapon().GetWeaponClassName()
+						titan.TakeWeapon( p_weap )
+						titan.GiveWeapon( TryReplacementOverride( null, null, t_a.weapon_overrides, 2 ) )
+					}
+				}
+			}
+		}
+	}
+
+	titan.GiveOffhandWeapon( offhand_weaponry[0].weapon, 0, [] )
+	titan.GiveOffhandWeapon( offhand_weaponry[1].weapon, 1, [] )
+	//thought about the dual rocketpod model and had it at one point... was kinda meh with no right hand version
 
 	ChangeWeaponSkin( titan, titan.GetTeam() )
 }
-
 
 function Titan_OnPlayerDeath( player, damageInfo )
 {
@@ -350,4 +491,131 @@ function SetDecalForTitan( player )
         if ( IsValid( titan ) )
             titan.SetSkin( skinIndex )
     }
+}
+
+function TryReplacementOverride( loadout_special, loadout_ordnance, weap_table, type )
+{
+
+	switch( type )
+	{
+		case 0: //ORDNANCE
+			if( weap_table.ordnance_weapon_id != null && weap_table.ordnance_weapon_id != "" )
+				return weap_table.ordnance_weapon_id
+			return TryDualOffhandWeaponry( loadout_special, loadout_ordnance, false )
+		case 1: //SPECIAL
+			if( weap_table.tactical_weapon_id != null && weap_table.tactical_weapon_id != "" )
+				return weap_table.tactical_weapon_id
+			return TryDualOffhandWeaponry( loadout_special, loadout_ordnance, true )
+		case 2: //PRIMARY
+			if( weap_table.primary_weapon_id != null && weap_table.primary_weapon_id != "" )
+				return weap_table.primary_weapon_id
+			return "mp_titanweapon_xo16"
+			
+	}
+}
+
+function TryDualOffhandWeaponry( loadout_special, loadout_ordnance, replaces_tactical_instead )
+{
+	if( replaces_tactical_instead == true)
+	{
+		switch ( loadout_special )
+		{
+			case "mp_weapon_mega4":
+				if ( loadout_ordnance == "mp_titanweapon_salvo_rockets" )
+				{
+					return "mp_titanweapon_shoulder_rockets"
+				}
+				return "mp_titanweapon_salvo_rockets"
+			
+			case "mp_titanweapon_vortex_shield":
+				if ( loadout_ordnance == "mp_titanweapon_homing_rockets" )
+				{
+					return "mp_titanweapon_salvo_rockets"
+				}
+				return "mp_titanweapon_homing_rockets"
+			
+			case "mp_titanability_smoke":
+				if ( loadout_ordnance == "mp_titanweapon_dumbfire_rockets" )
+				{
+					return "mp_titanweapon_homing_rockets"
+				}
+				return "mp_titanweapon_dumbfire_rockets"
+			
+			case "mp_titanability_bubble_shield":
+				if ( loadout_ordnance == "mp_titanweapon_shoulder_rockets" )
+				{
+					return "mp_titanweapon_dumbfire_rockets"
+				}
+				return "mp_titanweapon_shoulder_rockets"
+			
+			default:
+				if ( loadout_ordnance == "mp_titanweapon_shoulder_rockets" )
+					return "mp_titanweapon_dumbfire_rockets"
+				if ( loadout_ordnance == "mp_titanweapon_dumbfire_rockets" )
+					return "mp_titanweapon_homing_rockets"
+				if ( loadout_ordnance == "mp_titanweapon_homing_rockets" )
+					return "mp_titanweapon_salvo_rockets"
+				if ( loadout_ordnance == "mp_titanweapon_salvo_rockets" )
+					return "mp_titanweapon_shoulder_rockets"
+				return "mp_titanweapon_salvo_rockets"
+		}
+	}
+	else
+	{
+		switch ( loadout_ordnance )
+		{
+			case "mp_titanweapon_salvo_rockets":
+				if ( loadout_special == "mp_weapon_mega4" )
+				{
+					return "mp_titanability_bubble_shield"
+				}
+				return "mp_weapon_mega4"
+			
+			case "mp_titanweapon_homing_rockets":
+				if ( loadout_special == "mp_titanweapon_vortex_shield" )
+				{
+					return "mp_weapon_mega4"
+				}
+				return "mp_titanweapon_vortex_shield"
+			
+			case "mp_titanweapon_dumbfire_rockets":
+				if ( loadout_special == "mp_titanability_smoke" )
+				{
+					return "mp_titanweapon_vortex_shield"
+				}
+				return "mp_titanability_smoke"
+			
+			case "mp_titanweapon_shoulder_rockets":
+				if ( loadout_special == "mp_titanability_bubble_shield" )
+				{
+					return "mp_titanability_smoke"
+				}
+				return "mp_titanability_bubble_shield"
+			
+			default:
+				if ( loadout_ordnance == "mp_titanweapon_salvo_rockets" )
+					return "mp_weapon_mega4"
+				if ( loadout_ordnance == "mp_titanweapon_homing_rockets" )
+					return "mp_titanweapon_vortex_shield"
+				if ( loadout_ordnance == "mp_titanweapon_dumbfire_rockets" )
+					return "mp_titanability_smoke"
+				if ( loadout_ordnance == "mp_titanweapon_shoulder_rockets" )
+					return "mp_titanability_bubble_shield"
+				return "mp_titanweapon_vortex_shield"
+		}
+	}
+}
+
+function CheckingMissilesOverwritten( ordnance, special )
+{
+	if ( ordnance == "mp_titanweapon_salvo_rockets" || special == "mp_titanweapon_salvo_rockets" )
+		return true
+	if ( ordnance == "mp_titanweapon_dumbfire_rockets" || special == "mp_titanweapon_dumbfire_rockets" )
+		return true
+	if ( ordnance == "mp_titanweapon_homing_rockets" || special == "mp_titanweapon_homing_rockets" )
+		return true
+	if ( ordnance == "mp_titanweapon_shoulder_rockets" || special == "mp_titanweapon_shoulder_rockets" )
+		return true
+	
+	return false
 }

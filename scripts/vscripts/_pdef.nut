@@ -34,7 +34,9 @@ function InitPersistence()
     AddPersistenceKey("spawnAsTitan", "bool")
     AddPersistenceKey("haveSeenCustomCoop", "bool")
 
+	Globalize( add_setfile_persistance )
 
+	IncludeFile( "Yoshi's_All-Stars" )
 
     ::gameModes <- {
         tdm = 0
@@ -239,6 +241,8 @@ function InitPersistence()
     }
 
     AddPersistenceEnum("titanSetFile", titanSetFile)
+
+	//IncludeFile( "Yoshi's_All-Stars" )//the big star script
 
     ::titanMod <- {
         NULL = 0
@@ -1997,7 +2001,7 @@ function InitPersistence()
     AddPersistenceKey("playlistAnnouncementSeen", "bool")
 	AddPersistenceKey("delta.everythingUnlocked", "bool")
 }
-InitPersistence()
+
 function IsDelta() {
     return !GetConVarBool("net_secure")
 }
@@ -2187,3 +2191,22 @@ function testpdef() {
     for (local k = 0; k < PersistenceGetEnumCount("unlockRefs"); k++)
 		printt(k, PersistenceGetEnumItemNameForIndex("unlockRefs", k))
 }
+
+function add_setfile_persistance() // game keeps rejecting new additions into setfile pdef table, wont crash but this is bad.
+{
+	local loop_max = MasterModdedTitans.len()
+	for( local E = 0; E < loop_max; E++ )
+	{
+		if( loop_max > 0 )
+		{
+			local t_a = MasterModdedTitans[ E ]
+
+			::titanSetFile[ t_a.setfile ] <- E + BASE_TITAN_COUNT
+
+			printl( ::titanSetFile )
+			
+		}
+	}
+}
+
+InitPersistence()

@@ -2,6 +2,10 @@ const PERSISTENCE_INIT_VERSION = 22
 
 const RANDOMIZE_BOT_LOADOUT	= 1
 
+const BASE_TITAN_COUNT = 5 //Adds 3 for titans and 1 to make a valid array placement
+::MasterModdedTitans <- [] //the big, centralized table array thing -YtH
+::Titans_Enum_Placement <- 3
+
 const TESTCONST = 99
 const TEAM_ANY = -1
 const TEAM_INVALID = -1

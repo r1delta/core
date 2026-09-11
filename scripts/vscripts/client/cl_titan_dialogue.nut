@@ -262,6 +262,7 @@ function ShouldPlayTitanCockpitDialogueIfPlayerIsNotTitan( player, eventType )
 
 function TitanCockpit_PlayDialogInternal( player, eventType )
 {
+	printl( player.s)
 	if ( player.s.titanCockpitDialogActive && file.events[eventType].priority <= file.events[player.s.titanCockpitDialogActive].priority )
 	{
 		//printt( "Returning from TitanCockpit_PlayDialogInternal because another higher priority dialog is taking place" )
@@ -296,9 +297,8 @@ function TitanCockpit_PlayDialogInternal( player, eventType )
 			break
 
 		case "core_online":
-			local soul = player.GetTitanSoul()
-			local titanType = GetSoulTitanType( soul )
-
+			local titanType = player.GetPlayerSettingsField( "footstep_type" )
+			
 			switch ( titanType )
 			{
 				case "atlas":
@@ -310,13 +310,16 @@ function TitanCockpit_PlayDialogInternal( player, eventType )
 				case "stryder":
 					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_ONLINE_DASH )
 					break
+				
+				default:
+					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_ONLINE_DAMAGE )
+					break
 			}
 			break
 
 		case "core_activated":
-			local soul = player.GetTitanSoul()
-			local titanType = GetSoulTitanType( soul )
-
+			local titanType = player.GetPlayerSettingsField( "footstep_type" )
+			
 			switch ( titanType )
 			{
 				case "atlas":
@@ -328,13 +331,16 @@ function TitanCockpit_PlayDialogInternal( player, eventType )
 				case "stryder":
 					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_ACTIVATED_DASH )
 					break
+				
+				default:
+					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_ACTIVATED_DAMAGE )
+					break
 			}
 			break
 
 		case "core_fired":
-			local soul = player.GetTitanSoul()
-			local titanType = GetSoulTitanType( soul )
-
+			local titanType = player.GetPlayerSettingsField( "footstep_type" )
+			
 			switch ( titanType )
 			{
 				case "atlas":
@@ -346,13 +352,16 @@ function TitanCockpit_PlayDialogInternal( player, eventType )
 				case "stryder":
 					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_DESC_DASH )
 					break
+				
+				default:
+					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_DESC_DAMAGE )
+					break
 			}
 			break
 
 		case "core_expiring":
-			local soul = player.GetTitanSoul()
-			local titanType = GetSoulTitanType( soul )
-
+			local titanType = player.GetPlayerSettingsField( "footstep_type" )
+			
 			switch ( titanType )
 			{
 				case "atlas":
@@ -364,13 +373,16 @@ function TitanCockpit_PlayDialogInternal( player, eventType )
 				case "stryder":
 					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_EXPIRING_DASH )
 					break
+				
+				default:
+					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_EXPIRING_DAMAGE )
+					break
 			}
 			break
 
 		case "core_offline":
-			local soul = player.GetTitanSoul()
-			local titanType = GetSoulTitanType( soul )
-
+			local titanType = player.GetPlayerSettingsField( "footstep_type" )
+			
 			switch ( titanType )
 			{
 				case "atlas":
@@ -382,13 +394,16 @@ function TitanCockpit_PlayDialogInternal( player, eventType )
 				case "stryder":
 					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_OFFLINE_DASH )
 					break
+				
+				default:
+					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_OFFLINE_DAMAGE )
+					break
 			}
 			break
 
 		case "core_denied":
-			local soul = player.GetTitanSoul()
-			local titanType = GetSoulTitanType( soul )
-
+			local titanType = player.GetPlayerSettingsField( "footstep_type" )
+			
 			switch ( titanType )
 			{
 				case "atlas":
@@ -399,6 +414,10 @@ function TitanCockpit_PlayDialogInternal( player, eventType )
 					break
 				case "stryder":
 					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_DENIED_DASH )
+					break
+				
+				default://ignore this until needed
+					player.s.titanCockpitDialogAliasList.append( file.betty.CORE_DENIED_DAMAGE )
 					break
 			}
 			break
